@@ -1,0 +1,17 @@
+{
+  "name": "beyond88/storeconnect",
+  "description": "StoreConnect: Real-Time Order Synchronization for WooCommerce",
+  "autoload": {
+    "psr-4": {
+      "StoreConnect\\": "includes/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Mohiuddin Abdul Kader",
+      "email": "muhin.cse.diu@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {}
+}
