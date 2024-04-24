@@ -18,5 +18,6 @@ class Frontend {
     * @return   object
     */
     function __construct() {
+        new Frontend\StoreFront();
     }
 }

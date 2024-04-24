@@ -1,6 +1,6 @@
 <?php
-
 namespace StoreConnect;
+use StoreConnect\Provider\Order;
 
 /**
  * API Class
@@ -27,5 +27,14 @@ class API {
      * @param   none
      * @return  void
      */
-    public function register_api() {}
+    public function register_api() {
+
+        $order = new Order();
+
+        register_rest_route('storeconnect/v1', '/hub-update', array(
+            'methods' => 'POST',
+            'callback' => array( $order, 'handle_hub_update_request'),
+            'permission_callback' => '__return_true',
+        ));
+    }
 }
