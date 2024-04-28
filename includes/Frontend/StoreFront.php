@@ -59,8 +59,8 @@ class StoreFront {
             'billing_postcode' => $order->get_billing_postcode(),
             'billing_country' => $order->get_billing_country(),
             'payment_method' => $order->get_payment_method(),
-            'payment_method_title' => $order->get_payment_method_title(),
-            'shipping_method' => $order->get_shipping_method(),
+            'payment_method_title' => method_exists($order, 'get_payment_method_title') ? $order->get_payment_method_title() : '',
+            'shipping_method' => method_exists($order, 'get_shipping_method') ? $order->get_shipping_method() : '',
             'shipping_total' => $order->get_shipping_total(),
             'cart_tax' => $order->get_cart_tax(),
             'shipping_tax' => $order->get_shipping_tax(),
@@ -73,14 +73,20 @@ class StoreFront {
             'date_completed' => $order->get_date_completed() ? $order->get_date_completed()->format('Y-m-d H:i:s') : '',
             'cart_hash' => $order->get_cart_hash(),
             'order_key' => $order->get_order_key(),
-            'coupon_lines' => $order->get_coupon_lines(),
+            'coupon_lines' => method_exists($order, 'get_coupon_lines') ? $order->get_coupon_lines() : '',
             'currency' => $order->get_currency(),
             'discount_total' => $order->get_discount_total(),
             'discount_tax' => $order->get_discount_tax(),
-            'shipping_method_title' => $order->get_shipping_method_title(),
-            'shipping_method_id' => $order->get_shipping_method_id(),
+            'shipping_method_title' => method_exists($order, 'get_shipping_method_title') ? $order->get_shipping_method_title() : '',
+            'shipping_method_id' => method_exists($order, 'get_shipping_method_id') ? $order->get_shipping_method_id() : '',
             'refunds' => $order->get_refunds(),
         );
+
+        // foreach ($order_data as $key => $value) {
+        //     if ($value === false || $value === null) {
+        //         error_log("Error fetching order property '$key'");
+        //     }
+        // }
 
         // Get order notes
         $order_notes = wc_get_order_notes(array(
@@ -99,7 +105,7 @@ class StoreFront {
         // Get order meta data
         $order_meta_data = $order->get_meta_data();
     
-        // Add order meta data to order data
+        //Add order meta data to order data
         foreach ($order_meta_data as $meta) {
             $meta_key = $meta->key;
             $meta_value = $meta->value;
@@ -107,7 +113,7 @@ class StoreFront {
             $order_data['meta_data'][$meta_key] = $meta_value;
         }
 
-        // Send order data to Hub
+        //Send order data to Hub
         $this->send_data_to_hub( $order_data );
     }
 
@@ -118,7 +124,10 @@ class StoreFront {
      */
     public function send_data_to_hub( $data ) {
 
-        $response = $this->api->post('orders', json_encode($data) );
+        //$response = $this->api->post('orders', json_encode($data) );
+
+        // print_r($data);
+        // exit();
 
         // Check for errors
         if ( is_wp_error( $response ) ) {

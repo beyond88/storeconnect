@@ -5,7 +5,7 @@
  * Plugin URI: https://github.com/beyond88/storeconnect
  * Author: Mohiuddin Abdul Kader
  * Author URI: https://github.com/beyond88
- * Version: 1.0.10
+ * Version: 1.0.0
  * License: GPL2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       storeconnect
