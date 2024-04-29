@@ -134,7 +134,7 @@ class StoreFront {
                 error_log('Order data sent to Hub successfully. Status Code: ' . $status_code . ', Response Body: ' . $response_body);
             } else {
                 // Handle unexpected response type
-                echo "Unexpected response type: " . get_class($response);
+                echo "Unexpected response type: ";
             }
 
         } catch (RequestException $e) {

@@ -12,13 +12,12 @@ class StoreConnectAPI {
     public $base_url = 'https://example.com';
 
     public function __construct() {
-
         $this->base_url = get_option('wc_settings_tab_storeconnect_base_url');
         $this->is_enable = get_option('wc_settings_tab_storeconnect_is_enable');
+    }
 
-        // if ( $this->is_enable ) {
-            
-        // }
+    public function is_enabled() {
+        return get_option('wc_settings_tab_storeconnect_is_enable');
     }
 
     private function client() {
@@ -34,6 +33,12 @@ class StoreConnectAPI {
 
 
     public function get($url, array $params = []) {
+
+        if ( $this->is_enabled() === 'no' ) {
+            error_log('StoreConnect API is disabled.');
+            return;
+        }
+
         try {
             $response = $this->client()->get($url, [
                 // 'auth'      => [ 0, $this->is_enable ],
@@ -55,6 +60,12 @@ class StoreConnectAPI {
     }
 
     public function post($url, $formData) {
+
+        if ( $this->is_enabled() === 'no' ) {
+            error_log('StoreConnect API is disabled.');
+            return;
+        }
+
         try {
             $response = $this->client()->post($url, [
                 // 'auth'      => [ 0, $this->is_enable ],
@@ -77,9 +88,14 @@ class StoreConnectAPI {
 
     public function put($url, $formData) {
 
+        if ( $this->is_enabled() === 'no' ) {
+            error_log('StoreConnect API is disabled.');
+            return;
+        }
+
         try {
             $response = $this->client()->put($url, [
-                'auth'      => [ 0, $this->is_enable ],
+                // 'auth'      => [ 0, $this->is_enable ],
                 'form_params' => $formData,
                 'on_stats' => function (TransferStats $stats) use (&$url) {
                     $url = $stats->getEffectiveUri();
@@ -94,7 +110,6 @@ class StoreConnectAPI {
             error_log((string) $response->getBody());
             var_dump((string) $response->getBody());
             die();
-
         }
     }
 }
