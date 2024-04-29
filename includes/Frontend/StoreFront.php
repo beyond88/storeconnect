@@ -1,6 +1,9 @@
 <?php
 namespace StoreConnect\Frontend;
 use StoreConnect\API\StoreConnectAPI;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Stream;
+use GuzzleHttp\Psr7\Response;
 
 /**
  * Ajax handler class
@@ -82,12 +85,6 @@ class StoreFront {
             'refunds' => $order->get_refunds(),
         );
 
-        // foreach ($order_data as $key => $value) {
-        //     if ($value === false || $value === null) {
-        //         error_log("Error fetching order property '$key'");
-        //     }
-        // }
-
         // Get order notes
         $order_notes = wc_get_order_notes(array(
             'order_id' => $order->get_id(),
@@ -123,26 +120,27 @@ class StoreFront {
      * @param array $data The order data to send to Hub.
      */
     public function send_data_to_hub( $data ) {
+        try {
+            // Make API request using GuzzleHTTP
+            $response = $this->api->post('order', $data);
 
-        //$response = $this->api->post('orders', json_encode($data) );
+            if ($response instanceof Response) {
+                // Get the response status code
+                $status_code = $response->getStatusCode();
+                // Get the response body
+                $response_body = (string) $response->getBody();
+    
+                // Log successful data transmission
+                error_log('Order data sent to Hub successfully. Status Code: ' . $status_code . ', Response Body: ' . $response_body);
+            } else {
+                // Handle unexpected response type
+                echo "Unexpected response type: " . get_class($response);
+            }
 
-        // print_r($data);
-        // exit();
-
-        // Check for errors
-        if ( is_wp_error( $response ) ) {
-            error_log( 'Error sending order data to Hub: ' . $response->get_error_message() );
+        } catch (RequestException $e) {
+            // Handle request exception
+            error_log('Error sending order data to Hub: ' . $e->getMessage());
             return;
         }
-
-        // Check for a valid response
-        $response_code = wp_remote_retrieve_response_code( $response );
-        if ( $response_code !== 200 ) {
-            error_log('Error sending order data to Hub: HTTP ' . $response_code );
-            return;
-        }
-
-        // Log successful data transmission
-        error_log('Order data sent to Hub successfully: ' . print_r( $data, true ));
     }
 }

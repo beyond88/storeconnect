@@ -58,13 +58,13 @@ class StoreConnectAPI {
         try {
             $response = $this->client()->post($url, [
                 // 'auth'      => [ 0, $this->is_enable ],
-                'body'     => $formData,
+                'form_params'     => $formData,
                 'on_stats' => function (TransferStats $stats) use (&$url) {
                     $url = $stats->getEffectiveUri();
                 }
             ]);
 
-            return $response->getBody();
+            return $response;
         } catch (BadResponseException $ex) {
             $response = $ex->getResponse();
             error_log('====================API ERROR==================');
@@ -80,13 +80,13 @@ class StoreConnectAPI {
         try {
             $response = $this->client()->put($url, [
                 'auth'      => [ 0, $this->is_enable ],
-                // 'json'     => $formData,
+                'form_params' => $formData,
                 'on_stats' => function (TransferStats $stats) use (&$url) {
                     $url = $stats->getEffectiveUri();
                 }
             ]);
 
-            return $response->getBody();
+            return $response;
         } catch (BadResponseException $ex) {
             $response = $ex->getResponse();
             error_log('====================API ERROR==================');
