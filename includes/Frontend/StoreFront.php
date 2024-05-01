@@ -1,5 +1,7 @@
 <?php
+
 namespace StoreConnect\Frontend;
+
 use StoreConnect\API\StoreConnectAPI;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Stream;
@@ -8,36 +10,36 @@ use GuzzleHttp\Psr7\Response;
 /**
  * Ajax handler class
  */
-class StoreFront {
+class StoreFront
+{
 
     private $api;
 
     /**
      * Class constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->api = new StoreConnectAPI();
-        add_action( 'woocommerce_checkout_order_processed', array( $this, 'send_order_data_to_hub') , 10, 3 );
+        add_action('woocommerce_order_status_changed', array($this, 'send_order_data_to_hub'), 10, 3);
     }
 
     /**
-     * Sends order data to Hub immediately after an order is placed.
+     * Sends order data to Hub when the order status is changed.
      *
-     * @param int $order_id The ID of the created order.
-     * @param array $posted_data Array of posted data from the checkout form.
-     * @param WC_Order $order The newly created order object.
+     * @param int $order_id The ID of the order.
+     * @param string $old_status The old order status.
+     * @param string $new_status The new order status.
      */
-    public function send_order_data_to_hub( $order_id, $posted_data, $order ) {
-        
-        // Check if the order exists
-        if ( ! $order ) {
-            return;
-        }
+    public function send_order_data_to_hub($order_id, $old_status, $new_status)
+    {
+        // Get the order object
+        $order = wc_get_order($order_id);
 
         // Prepare order data to send to Hub
         $order_data = array(
             'order_id' => $order->get_id(),
-            'status' => $order->get_status(),
+            'status' => $new_status,
             'order_total' => $order->get_total(),
             'billing_email' => $order->get_billing_email(),
             'billing_phone' => $order->get_billing_phone(),
@@ -69,6 +71,7 @@ class StoreFront {
             'customer_id' => $order->get_customer_id(),
             'customer_ip_address' => $order->get_customer_ip_address(),
             'customer_user_agent' => $order->get_customer_user_agent(),
+            'customer_note' => $order->get_customer_note(),
             'date_created' => $order->get_date_created() ? $order->get_date_created()->format('Y-m-d H:i:s') : '',
             'date_modified' => $order->get_date_modified() ? $order->get_date_modified()->format('Y-m-d H:i:s') : '',
             'date_completed' => $order->get_date_completed() ? $order->get_date_completed()->format('Y-m-d H:i:s') : '',
@@ -96,20 +99,20 @@ class StoreFront {
                 'note_content' => $note->content,
             );
         }
-    
+
         // Get order meta data
         $order_meta_data = $order->get_meta_data();
-    
-        //Add order meta data to order data
+
+        // Add order meta data to order data
         foreach ($order_meta_data as $meta) {
             $meta_key = $meta->key;
             $meta_value = $meta->value;
-    
+
             $order_data['meta_data'][$meta_key] = $meta_value;
         }
 
-        //Send order data to Hub
-        $this->send_data_to_hub( $order_data );
+        // Send order data to Hub
+        $this->send_data_to_hub($order_data);
     }
 
     /**
@@ -117,7 +120,8 @@ class StoreFront {
      *
      * @param array $data The order data to send to Hub.
      */
-    public function send_data_to_hub( $data ) {
+    public function send_data_to_hub($data)
+    {
         try {
             // Make API request using GuzzleHTTP
             $response = $this->api->post('order', $data);
@@ -131,7 +135,7 @@ class StoreFront {
                 $json_response = json_decode($response_body, true);
                 if (isset($json_response['post_id'])) {
                     $post_id = $json_response['post_id'];
-                    update_post_meta( $data['order_id'], '_hub_item_id', $post_id);
+                    update_post_meta($data['order_id'], '_hub_item_id', $post_id);
                     error_log('hub_item_id: ' . $post_id);
                 }
 
@@ -141,7 +145,6 @@ class StoreFront {
                 // Handle unexpected response type
                 error_log('Unexpected response type: ');
             }
-
         } catch (RequestException $e) {
             // Handle request exception
             error_log('Error sending order data to Hub: ' . $e->getMessage());
