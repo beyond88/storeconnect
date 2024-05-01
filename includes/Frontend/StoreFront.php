@@ -129,12 +129,19 @@ class StoreFront {
                 $status_code = $response->getStatusCode();
                 // Get the response body
                 $response_body = (string) $response->getBody();
-    
+
+                $json_response = json_decode($response_body, true);
+                if (isset($json_response['post_id'])) {
+                    $post_id = $json_response['post_id'];
+                    update_post_meta( $data['order_id'], '_hub_item_id', $post_id);
+                    error_log('hub_item_id: ' . $post_id);
+                }
+
                 // Log successful data transmission
                 error_log('Order data sent to Hub successfully. Status Code: ' . $status_code . ', Response Body: ' . $response_body);
             } else {
                 // Handle unexpected response type
-                echo "Unexpected response type: ";
+                error_log('Unexpected response type: ');
             }
 
         } catch (RequestException $e) {
