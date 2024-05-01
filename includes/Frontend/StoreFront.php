@@ -16,9 +16,7 @@ class StoreFront {
      * Class constructor
      */
     public function __construct() {
-
         $this->api = new StoreConnectAPI();
-
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'send_order_data_to_hub') , 10, 3 );
     }
 

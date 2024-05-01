@@ -1,6 +1,7 @@
 <?php
 namespace StoreConnect;
 use StoreConnect\Admin\StoreConnectSettings;
+use StoreConnect\Admin\OrderManage;
 
 /**
  * The admin class
@@ -17,6 +18,7 @@ class Admin {
      */
     function __construct() {
         StoreConnectSettings::instance()->init();
+        OrderManage::instance()->init();
     }
 
     /**
