@@ -33,10 +33,13 @@ class StoreFront
      */
     public function send_order_data_to_hub($order_id, $old_status, $new_status)
     {
-        // Get the order object
-        $order = wc_get_order($order_id);
 
-        // Prepare order data to send to Hub
+        $hub_item_id = get_post_meta($order_id, 'hub_item_id', true);
+        if (isset($hub_item_id)) {
+            return;
+        }
+
+        $order = wc_get_order($order_id);
         $order_data = array(
             'order_id' => $order->get_id(),
             'status' => $new_status,
@@ -86,7 +89,6 @@ class StoreFront
             'refunds' => $order->get_refunds(),
         );
 
-        // Get order notes
         $order_notes = wc_get_order_notes(array(
             'order_id' => $order->get_id(),
         ));
@@ -100,10 +102,7 @@ class StoreFront
             );
         }
 
-        // Get order meta data
         $order_meta_data = $order->get_meta_data();
-
-        // Add order meta data to order data
         foreach ($order_meta_data as $meta) {
             $meta_key = $meta->key;
             $meta_value = $meta->value;
@@ -111,7 +110,6 @@ class StoreFront
             $order_data['meta_data'][$meta_key] = $meta_value;
         }
 
-        // Send order data to Hub
         $this->send_data_to_hub($order_data);
     }
 
@@ -127,9 +125,7 @@ class StoreFront
             $response = $this->api->post('order', $data);
 
             if ($response instanceof Response) {
-                // Get the response status code
                 $status_code = $response->getStatusCode();
-                // Get the response body
                 $response_body = (string) $response->getBody();
 
                 $json_response = json_decode($response_body, true);
@@ -138,11 +134,8 @@ class StoreFront
                     update_post_meta($data['order_id'], '_hub_item_id', $post_id);
                     error_log('hub_item_id: ' . $post_id);
                 }
-
-                // Log successful data transmission
                 error_log('Order data sent to Hub successfully. Status Code: ' . $status_code . ', Response Body: ' . $response_body);
             } else {
-                // Handle unexpected response type
                 error_log('Unexpected response type: ');
             }
         } catch (RequestException $e) {
