@@ -21,15 +21,4 @@ class Admin {
         OrderManage::instance()->init();
     }
 
-    /**
-     * Dispatch and bind actions
-     *
-     * @since   1.0.0
-     * @access  public
-     * @param   string
-     * @return  void
-     */
-    public function dispatch_actions( $main ) {
-
-    }
 }
