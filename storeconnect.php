@@ -97,16 +97,17 @@ final class StoreConnect
 
         new StoreConnect\Assets();
         new StoreConnect\StoreConnecti18n();
+        new StoreConnect\Cron\SyncCron();
 
         if (defined('DOING_AJAX') && DOING_AJAX) {
             new StoreConnect\Ajax();
         }
 
-        if (is_admin()) {
-            new StoreConnect\Admin();
-        } else {
-            new StoreConnect\Frontend();
-        }
+        //if (is_admin()) {
+        new StoreConnect\Admin();
+        //} else {
+        new StoreConnect\Frontend();
+        //}
     }
 
     /**

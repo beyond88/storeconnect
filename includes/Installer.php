@@ -36,13 +36,4 @@ class Installer {
         update_option( 'storeconnect_version', STORECONNECT_VERSION );
     }
 
-    /**
-     * Create necessary database tables
-     *
-     * @return void
-     */
-    public function create_tables() {
-    
-    }
-
 }

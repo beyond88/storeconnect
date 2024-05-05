@@ -9,7 +9,7 @@ use GuzzleHttp\Psr7\Response;
 use StoreConnect\Traits\Singleton;
 
 
-class OrderManage
+class ManageOrder
 {
 
     use Singleton;
@@ -50,9 +50,7 @@ class OrderManage
                 $response = $this->api->post('order/delete', $data);
 
                 if ($response instanceof Response) {
-                    // Get the response status code
                     $status_code = $response->getStatusCode();
-                    // Get the response body
                     $response_body = (string) $response->getBody();
 
                     $json_response = json_decode($response_body, true);

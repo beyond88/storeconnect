@@ -186,7 +186,7 @@ class StoreConnectSettings
             case 'sync':
                 $settings = array(
                     'section_sync_title' => array(
-                        'name'     => __('Sync settings for existing data', 'storeconnect'),
+                        'name'     => __('Sync existing order', 'storeconnect'),
                         'type'     => 'title',
                         'desc'     => __('Send existing orders to HubCentral', 'storeconnect'),
                         'id'       => 'wc_settings_tab_storeconnect_section_title_sync'

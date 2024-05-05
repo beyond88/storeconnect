@@ -42,6 +42,12 @@ class Assets
                 'version' => filemtime(STORECONNECT_PATH . '/assets/js/axios.min.js'),
                 'deps'    => array(),
             ),
+            'storeconnect-order-sync-script' => array(
+                'src'     => STORECONNECT_ASSETS . '/js/order-sync.js',
+                'version' => filemtime(STORECONNECT_PATH . '/assets/js/order-sync.js'),
+                'deps'    => array(),
+            ),
+
         );
     }
 
@@ -74,30 +80,30 @@ class Assets
     public function register_admin_assets($hook)
     {
 
-        if ($hook === 'woocommerce_page_wc-settings') {
+        //if ($hook === 'woocommerce_page_wc-settings') {
 
-            $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
-            $section = isset($_GET['section']) ? $_GET['section'] : '';
+        $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
+        $section = isset($_GET['section']) ? $_GET['section'] : '';
 
-            // Check if the tab is 'settings_tab_storeconnect' and the section is 'sync'
-            if ($tab === 'settings_tab_storeconnect' && $section === 'sync') {
+        // Check if the tab is 'settings_tab_storeconnect' and the section is 'sync'
+        //if ($tab === 'settings_tab_storeconnect' && $section === 'sync') {
 
-                $scripts = $this->get_admin_scripts();
-                $styles  = $this->get_admin_styles();
+        $scripts = $this->get_admin_scripts();
+        $styles  = $this->get_admin_styles();
 
-                foreach ($scripts as $handle => $script) {
-                    $deps = isset($script['deps']) ? $script['deps'] : false;
-                    $type = isset($script['type']) ? $script['type'] : '';
-                    wp_enqueue_script($handle, $script['src'], $deps, $script['version'], true);
-                }
-
-                foreach ($styles as $handle => $style) {
-                    $deps = isset($style['deps']) ? $style['deps'] : false;
-                    $type = isset($script['type']) ? $script['type'] : '';
-
-                    wp_enqueue_style($handle, $style['src'], $deps, $style['version']);
-                }
-            }
+        foreach ($scripts as $handle => $script) {
+            $deps = isset($script['deps']) ? $script['deps'] : false;
+            $type = isset($script['type']) ? $script['type'] : '';
+            wp_enqueue_script($handle, $script['src'], $deps, $script['version'], true);
         }
+
+        foreach ($styles as $handle => $style) {
+            $deps = isset($style['deps']) ? $style['deps'] : false;
+            $type = isset($script['type']) ? $script['type'] : '';
+
+            wp_enqueue_style($handle, $style['src'], $deps, $style['version']);
+        }
+        //}
+        //}
     }
 }

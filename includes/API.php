@@ -1,11 +1,14 @@
 <?php
+
 namespace StoreConnect;
-use StoreConnect\Provider\Order;
+
+use StoreConnect\API\Resources\Order;
 
 /**
  * API Class
  */
-class API {
+class API
+{
 
     /**
      * Initialize the class
@@ -15,8 +18,9 @@ class API {
      * @param   none
      * @return  void
      */
-    function __construct() {
-        add_action( 'rest_api_init', array( $this, 'register_api' ) );
+    function __construct()
+    {
+        add_action('rest_api_init', array($this, 'register_api'));
     }
 
     /**
@@ -27,13 +31,14 @@ class API {
      * @param   none
      * @return  void
      */
-    public function register_api() {
+    public function register_api()
+    {
 
         $order = new Order();
 
         register_rest_route('storeconnect/v1', '/hub-update', array(
             'methods' => 'POST',
-            'callback' => array( $order, 'handle_hub_update_request'),
+            'callback' => array($order, 'process_order_request_from_hub'),
             'permission_callback' => '__return_true',
         ));
     }
