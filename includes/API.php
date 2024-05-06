@@ -44,7 +44,7 @@ class API
 
         register_rest_route('storeconnect/v1', '/sync-start', array(
             'methods' => 'POST',
-            'callback' => array($order, 'sync_order'),
+            'callback' => array($order, 'sync_start'),
             'permission_callback' => '__return_true',
         ));
 

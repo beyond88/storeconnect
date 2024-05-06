@@ -204,7 +204,7 @@ class Order
      * @param WP_REST_Request $request The REST request object.
      * @return WP_REST_Response The REST response.
      */
-    public  function sync_order(WP_REST_Request $request)
+    public  function sync_start(WP_REST_Request $request)
     {
         if (! empty($request) ) {
 
@@ -247,7 +247,7 @@ class Order
      *
      * @return void
      */
-    public function stop_sync_order()
+    public function stop_sync()
     {
         $cache_key = 'stc_order_sync_cache';
         wp_cache_delete($cache_key);
