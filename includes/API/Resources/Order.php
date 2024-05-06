@@ -135,15 +135,20 @@ class Order
                 if (isset($json_response['post_id'])) {
                     $post_id = $json_response['post_id'];
                     update_post_meta($data['order_id'], '_hub_item_id', $post_id);
+                    error_log('Order data sent to Hub successfully. Status Code: ' . $status_code . ', order_id:' . $data['order_id'] . ', hub_item_id:' . $post_id . '');
+                    return true; // Data sent successfully
                 }
-                error_log('Order data sent to Hub successfully. Status Code: ' . $status_code . '');
-            } else {
-                error_log('Unexpected response type: ');
+
+                error_log('Invalid response format. Missing post_id.');
+                return false; // Data not sent successfully
             }
+
+            error_log('Unexpected response type: ');
+            return false;
         } catch (RequestException $e) {
             // Handle request exception
             error_log('Error sending order data to Hub: ' . $e->getMessage());
-            return;
+            return false;
         }
     }
 

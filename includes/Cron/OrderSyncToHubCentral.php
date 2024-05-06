@@ -31,104 +31,55 @@ class OrderSyncToHubCentral
     public function sync()
     {
 
-        // $args = array(
-        //     'post_type' => 'shop_order',
-        //     'posts_per_page' => 10,
-        //     'fields'         => 'ids',
-        //     'meta_query' => array(
-        //         array(
-        //             'key' => '_hub_item_id',
-        //             'compare' => 'NOT EXISTS',
-        //         ),
-        //     ),
-        // );
-
-        // $query = new \WP_Query($args);
-        // if ($query->have_posts()) {
-        //     while ($query->have_posts()) {
-        //         $query->the_post();
-        //         $order_id = get_the_ID();
-        //         $order = new Order();
-        //         $order_data = $order->get_order($order_id);
-        //         $order->send_data_to_hub($order_data);
-        //     }
-
-        //     wp_reset_postdata();
-        // } else {
-        //     echo 'No orders found matching the criteria.';
-        // }
-
-
         $batch_size = 10;
-        $max_iterations = 10;
         $cache_key = 'stc_order_sync_cache';
 
-        // **Check for Cached IDs:**
-        $synced_order_ids = wp_cache_get($cache_key, false);
+        $synced_order_ids = wp_cache_get($cache_key, array());
 
-        if (false === $synced_order_ids) {
-            $args = array(
-                'post_type' => 'shop_order',
-                'posts_per_page' => -1,
-                'fields' => 'ids',
-                'meta_query' => array(
-                    array(
-                        'key' => '_hub_item_id',
-                        'compare' => 'NOT EXISTS',
-                    ),
-                ),
-            );
-
-            $query = new \WP_Query($args);
-
-            if ($query->have_posts()) {
-                $synced_order_ids = $query->get_posts();
-            } else {
-                $synced_order_ids = array();
-            }
-
+        if (empty($synced_order_ids)) {
+            $unsynced_orders = $this->get_unsynced_orders();
+            $synced_order_ids = array_column($unsynced_orders, 'ID');
+            error_log('total order found without column: ' . count($synced_order_ids));
             wp_cache_set($cache_key, $synced_order_ids, HOUR_IN_SECONDS);
         }
 
-        $processed_orders = 0;
-        do {
-            $iteration = 0;
+        $order = new Order();
+        $total_orders = count($synced_order_ids);
 
-            // **Process Orders from Cache:**
-            $order_ids_to_process = array_slice($synced_order_ids, $processed_orders, $batch_size);
+        for ($i = 0; $i < $batch_size && $i < $total_orders; $i++) {
+            $order_id = $synced_order_ids[$i];
+            $order_data = $order->get_order($order_id);
+            $success = $order->send_data_to_hub($order_data);
 
-            if (empty($order_ids_to_process)) {
-                break; // Exit loop if no more orders to process
+            if ($success) {
+                error_log("Order data sent to Hub successfully. Order ID: $order_id");
+            } else {
+                error_log("Failed to send order data (ID: $order_id) to hub.");
             }
-
-            foreach ($order_ids_to_process as $order_id) {
-
-                $order = new Order();
-                $order_data = $order->get_order($order_id);
-                $success = $order->send_data_to_hub($order_data);
-
-                if ($success) {
-                    $processed_orders++;
-
-                    $synced_order_ids = array_slice($synced_order_ids, $processed_orders);
-                    wp_cache_set($cache_key, $synced_order_ids, HOUR_IN_SECONDS);
-                } else {
-                    error_log("Failed to send order data (ID: $order_id) to hub.");
-                }
-
-                $iteration++;
-                if ($iteration >= $batch_size) {
-                    break;
-                }
-            }
-
-            wp_reset_postdata();
-
-            // **Deadlock Handling:** Check for successful processing and limit iterations
-        } while ($processed_orders > 0 && $iteration < $max_iterations);
-
-        if ($iteration >= $max_iterations) {
-            error_log("Potential deadlock encountered during order sync. Consider increasing max_iterations or investigating database issues.");
         }
+    }
+
+    // Helper function to fetch unsynced orders (replace with your actual logic)
+    private function get_unsynced_orders()
+    {
+
+        global $wpdb;
+        $orders_table = $wpdb->prefix . 'posts';
+        $meta_table = $wpdb->prefix . 'postmeta';
+        $post_type = 'shop_order';
+        $meta_key = '_hub_item_id';
+
+        $query = $wpdb->prepare("
+            SELECT p.ID
+            FROM $orders_table p
+            LEFT JOIN $meta_table pm ON p.ID = pm.post_id AND pm.meta_key = '" . $meta_key . "'
+            WHERE pm.meta_id IS NULL
+            AND p.post_type = %s
+            ORDER BY p.ID DESC
+        ", $post_type);
+
+        $orders = $wpdb->get_results($query, ARRAY_A);
+        error_log('total order found: ', count($orders));
+        return $orders ? $orders : array();
     }
 }

@@ -97,7 +97,7 @@ class StoreConnectSettings
     {
         global $current_section;
         $settings = $this->get_settings($current_section);
-        WC_Admin_Settings::output_fields($settings);
+        \WC_Admin_Settings::output_fields($settings);
     }
 
     /**
@@ -301,20 +301,21 @@ class StoreConnectSettings
     public function print_sync_table()
     {
 
-        $rows = [
-            [
-                'th' => '<label>' . __('WooCommerce &#128073; HubCentral', 'storeconnect') . '</label>',
-                'td' => '<button id="woo-storeconnect-order-sync-btn" type="button" class="wt_button">
-                            <span>' . __('&#10004 Sync now', 'storeconnect') . '</span>
-                        </button><span class="sync_message" id="sync_order_message"></span>
-                ',
-                'td_extra' => '<button id="woo-storeconnect-order-stop-sync-btn" type="button" class="wt_button_extra">
-                            <span>' . __('Stop sync', 'storeconnect') . '</span>
-                        </button>
-                ',
-            ]
-        ];
+        // $rows = [
+        //     [
+        //         'th' => '<label>' . __('WooCommerce &#128073; HubCentral', 'storeconnect') . '</label>',
+        //         'td' => '<button id="storeconnect-order-sync-btn" type="button" class="button">
+        //                     <span>' . __('&#10004 Sync now', 'storeconnect') . '</span>
+        //                 </button><span class="sync_message" id="sync_order_message"></span>
+        //         ',
+        //         'td_extra' => '<button id="woo-storeconnect-order-stop-sync-btn" type="button" class="button">
+        //                     <span>' . __('Stop sync', 'storeconnect') . '</span>
+        //                 </button>
+        //         ',
+        //     ]
+        // ];
 
-        echo $this->custom_rows($rows);
+        // echo $this->custom_rows($rows);
+        return include __DIR__ . '/views/sync-template.php';
     }
 }
