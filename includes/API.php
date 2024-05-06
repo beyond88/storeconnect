@@ -41,5 +41,23 @@ class API
             'callback' => array($order, 'process_order_request_from_hub'),
             'permission_callback' => '__return_true',
         ));
+
+        register_rest_route('storeconnect/v1', '/sync-start', array(
+            'methods' => 'POST',
+            'callback' => array($order, 'sync_order'),
+            'permission_callback' => '__return_true',
+        ));
+
+        register_rest_route('storeconnect/v1', '/sync-status', array(
+            'methods' => 'POST',
+            'callback' => array($order, 'sync_status'),
+            'permission_callback' => '__return_true',
+        ));
+
+        register_rest_route('storeconnect/v1', '/sync-stop', array(
+            'methods' => 'POST',
+            'callback' => array($order, 'stop_sync'),
+            'permission_callback' => '__return_true',
+        ));
     }
 }

@@ -1,12 +1,10 @@
 <?php
 
 namespace StoreConnect\Cron;
-
-use StoreConnect\Traits\Singleton;
+use StoreConnect\Cron\OrderSyncToHubCentral;
 
 class SyncCron
 {
-    use Singleton;
 
     /**
      * Constructor method for SyncCron class.
@@ -53,7 +51,6 @@ class SyncCron
      */
     public function storeconnect_sync_orders_schedule_fn()
     {
-        error_log('storeconnect_sync_orders_schedule defined!');
-        //OrderSyncToHubCentral::instance()->sync();
+        OrderSyncToHubCentral::instance()->sync();
     }
 }

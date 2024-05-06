@@ -43,8 +43,8 @@ class OrderSyncToHubCentral
             wp_cache_set($cache_key, $synced_order_ids, HOUR_IN_SECONDS);
         }
 
-        $order = new Order();
         $total_orders = count($synced_order_ids);
+        $order = new Order();
 
         for ($i = 0; $i < $batch_size && $i < $total_orders; $i++) {
             $order_id = $synced_order_ids[$i];

@@ -2,6 +2,8 @@
 
 namespace StoreConnect;
 
+use StoreConnect\Cron\OrderSyncToHubCentral;
+
 /**
  * Ajax handler class
  */
@@ -38,7 +40,7 @@ class Ajax
                 wp_schedule_event(time(), 'storeconnect_sync_1_min', 'storeconnect_sync_orders_schedule');
             }
 
-            //WooCommerceToTripletexOrder::instance()->sync();
+            OrderSyncToHubCentral::instance()->sync();
 
             wp_send_json_success(
                 "<p class='storeconnect_success'>" . __('Order sync in progress', 'storeconnect') . "</p>",
@@ -84,8 +86,6 @@ class Ajax
                 402
             );
         }
-
-        //wp_die();
     }
 
     /**

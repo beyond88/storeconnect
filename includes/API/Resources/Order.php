@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Stream;
 use GuzzleHttp\Psr7\Response;
 use StoreConnect\API\StoreConnectAPI;
+use StoreConnect\Cron\OrderSyncToHubCentral;
 
 class Order
 {
@@ -195,5 +196,63 @@ class Order
                 }
             }
         }
+    }
+
+    /**
+     * Sync orders endpoint.
+     * 
+     * @param WP_REST_Request $request The REST request object.
+     * @return WP_REST_Response The REST response.
+     */
+    public  function sync_order(WP_REST_Request $request)
+    {
+        if (! empty($request) ) {
+
+            if (!wp_next_scheduled('storeconnect_sync_orders_schedule')) {
+                wp_schedule_event(time(), 'storeconnect_sync_1_min', 'storeconnect_sync_orders_schedule');
+            }
+
+            OrderSyncToHubCentral::instance()->sync();
+
+            return new WP_REST_Response(array('success' => true, 'message' => 'Order sync in progress'), 200);
+        } else {
+            return new WP_REST_Response(array('success' => true, 'message' => 'Something went wrong'), 200);
+        }
+    }
+
+    /**
+     * Callback function for fetching synchronization status.
+     *
+     * @return void
+     */
+    public function sync_status(WP_REST_Request $request)
+    {
+
+        if (!empty($request)) {
+            $schedule = wp_get_schedule('storeconnect_sync_orders_schedule');
+            $cache_key = 'stc_order_sync_cache';
+            $synced_order_ids = wp_cache_get($cache_key, array());
+            if (!empty($synced_order_ids) || $schedule) {
+                return new WP_REST_Response(array('success' => true, 'message' => 'Order sync in progress'), 200);
+            }
+            return new WP_REST_Response(array('success' => true, 'message' => 'Order syncing is finished'), 200);
+        } else {
+            return new WP_REST_Response(array('success' => true, 'message' => 'Something went wrong'), 402);
+        }
+
+    }
+
+    /**
+     * Callback function for stopping order synchronization.
+     *
+     * @return void
+     */
+    public function stop_sync_order()
+    {
+        $cache_key = 'stc_order_sync_cache';
+        wp_cache_delete($cache_key);
+        wp_clear_scheduled_hook('storeconnect_sync_orders_schedule');
+
+        return new WP_REST_Response(array('success' => true, 'message' => ''), 200);
     }
 }
