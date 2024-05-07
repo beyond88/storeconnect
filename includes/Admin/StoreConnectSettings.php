@@ -188,7 +188,7 @@ class StoreConnectSettings
                     'section_sync_title' => array(
                         'name'     => __('Sync existing order', 'storeconnect'),
                         'type'     => 'title',
-                        'desc'     => __('Send existing orders to HubCentral', 'storeconnect'),
+                        'desc'     => __('', 'storeconnect'),
                         'id'       => 'wc_settings_tab_storeconnect_section_title_sync'
                     ),
 

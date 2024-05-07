@@ -32,22 +32,21 @@ class Assets
     public function get_admin_scripts()
     {
         return array(
-            'storeconnect-vue-script' => array(
-                'src'     => STORECONNECT_ASSETS . '/js/vue.min.js',
-                'version' => filemtime(STORECONNECT_PATH . '/assets/js/vue.min.js'),
-                'deps'    => array(),
-            ),
-            'storeconnect-axios-script' => array(
+            'storeconnect-axios' => array(
                 'src'     => STORECONNECT_ASSETS . '/js/axios.min.js',
                 'version' => filemtime(STORECONNECT_PATH . '/assets/js/axios.min.js'),
                 'deps'    => array(),
             ),
-            'storeconnect-order-sync-script' => array(
+            'vue-min' => array(
+                'src'     => STORECONNECT_ASSETS . '/js/vue.min.js',
+                'version' => '2.6.14',
+                'deps'    => array('jquery'),
+            ),
+            'order-sync' => array(
                 'src'     => STORECONNECT_ASSETS . '/js/order-sync.js',
                 'version' => filemtime(STORECONNECT_PATH . '/assets/js/order-sync.js'),
-                'deps'    => array(),
+                'deps'    => array('vue-min-js'),
             ),
-
         );
     }
 
@@ -80,21 +79,13 @@ class Assets
     public function register_admin_assets($hook)
     {
 
-        //if ($hook === 'woocommerce_page_wc-settings') {
-
-        $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
-        $section = isset($_GET['section']) ? $_GET['section'] : '';
-
-        // Check if the tab is 'settings_tab_storeconnect' and the section is 'sync'
-        //if ($tab === 'settings_tab_storeconnect' && $section === 'sync') {
-
         $scripts = $this->get_admin_scripts();
         $styles  = $this->get_admin_styles();
 
         foreach ($scripts as $handle => $script) {
             $deps = isset($script['deps']) ? $script['deps'] : false;
             $type = isset($script['type']) ? $script['type'] : '';
-            wp_enqueue_script($handle, $script['src'], $deps, $script['version'], true);
+            wp_enqueue_script($handle, $script['src'], $deps, $script['version'], true, true);
         }
 
         foreach ($styles as $handle => $style) {
@@ -103,7 +94,5 @@ class Assets
 
             wp_enqueue_style($handle, $style['src'], $deps, $style['version']);
         }
-        //}
-        //}
     }
 }
