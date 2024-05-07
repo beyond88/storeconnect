@@ -113,9 +113,11 @@ export default {
           {}
         );
         console.log("Sync started:", response);
-        if(response.data.success) {
-          if(parseInt(response.data.response.remaining_orders) > 0) {
+        if (response.data.success) {
+          if (parseInt(response.data.response.remaining_orders) > 0) {
+            console.log("order max 10");
             this.showSyncSpinner();
+            this.syncInProgress = true;
           }
         }
       } catch (error) {
@@ -124,13 +126,12 @@ export default {
           "Error updating order status and adding note:",
           error.response.data
         );
-      } finally {
         this.hideSyncSpinner();
       }
     },
     async stopSync() {
       try {
-        this.showSyncSpinner();
+        this.syncInProgress = false;
         const response = await axios.post(
           `${this.baseURL}/wp-json/storeconnect/v1/stop-sync`,
           {},
