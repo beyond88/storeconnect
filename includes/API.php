@@ -42,7 +42,7 @@ class API
             'permission_callback' => '__return_true',
         ));
 
-        register_rest_route('storeconnect/v1', '/sync-start', array(
+        register_rest_route('storeconnect/v1', '/start-sync', array(
             'methods' => 'POST',
             'callback' => array($order, 'sync_start'),
             'permission_callback' => '__return_true',
@@ -54,7 +54,7 @@ class API
             'permission_callback' => '__return_true',
         ));
 
-        register_rest_route('storeconnect/v1', '/sync-stop', array(
+        register_rest_route('storeconnect/v1', '/stop-sync', array(
             'methods' => 'POST',
             'callback' => array($order, 'stop_sync'),
             'permission_callback' => '__return_true',

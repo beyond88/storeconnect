@@ -1,0 +1,29 @@
+{
+  "name": "storeconnect",
+  "version": "1.0.0",
+  "description": "StoreConnect",
+  "author": "Mohiuddin Abdul Kader <muhin.cse.diu@gmail.com>",
+  "license": "GPLv3",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --config=node_modules/laravel-mix/setup/webpack.config.js"
+  },
+  "dependencies": {
+    "vue": "^3.4.27"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.5",
+    "@babel/preset-env": "^7.24.5",
+    "axios": "^1.6.8",
+    "babel-loader": "^9.1.3",
+    "cross-env": "^7.0.3",
+    "laravel-mix": "^6.0.49",
+    "sass": "^1.77.0",
+    "sass-loader": "^14.2.1",
+    "vue-loader": "^17.4.2",
+    "vue-template-compiler": "^2.7.16",
+    "vuex": "^4.1.0"
+  }
+}

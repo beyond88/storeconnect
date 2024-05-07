@@ -54,7 +54,7 @@ class StoreConnectAPI
     {
 
         return new Client([
-            'base_uri' => $this->base_url . '/v1/',
+            'base_uri' => $this->base_url,
             'timeout'  => 100,
             'headers' => [
                 'Content-Type' => 'application/json',

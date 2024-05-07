@@ -1,6 +1,7 @@
 <?php
 
 namespace StoreConnect\Cron;
+
 use StoreConnect\Cron\OrderSyncToHubCentral;
 
 class SyncCron

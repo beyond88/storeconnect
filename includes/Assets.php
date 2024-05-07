@@ -32,22 +32,21 @@ class Assets
     public function get_admin_scripts()
     {
         return array(
-            'storeconnect-vue-script' => array(
-                'src'     => STORECONNECT_ASSETS . '/js/vue.min.js',
-                'version' => filemtime(STORECONNECT_PATH . '/assets/js/vue.min.js'),
+            'storeconnect-manifest' => array(
+                'src'     => STORECONNECT_ASSETS . '/js/manifest.js',
+                'version' => filemtime(STORECONNECT_PATH . '/assets/js/manifest.js'),
                 'deps'    => array(),
             ),
-            'storeconnect-axios-script' => array(
-                'src'     => STORECONNECT_ASSETS . '/js/axios.min.js',
-                'version' => filemtime(STORECONNECT_PATH . '/assets/js/axios.min.js'),
+            'storeconnect-vendor' => array(
+                'src'     => STORECONNECT_ASSETS . '/js/vendor.js',
+                'version' => filemtime(STORECONNECT_PATH . '/assets/js/vendor.js'),
                 'deps'    => array(),
             ),
-            'storeconnect-order-sync-script' => array(
-                'src'     => STORECONNECT_ASSETS . '/js/order-sync.js',
-                'version' => filemtime(STORECONNECT_PATH . '/assets/js/order-sync.js'),
-                'deps'    => array(),
+            'storeconnect-admin' => array(
+                'src'     => STORECONNECT_ASSETS . '/js/admin.js',
+                'version' => filemtime(STORECONNECT_PATH . '/assets/js/admin.js'),
+                'deps'    => array('storeconnect-vendor'),
             ),
-
         );
     }
 
@@ -80,13 +79,8 @@ class Assets
     public function register_admin_assets($hook)
     {
 
-        //if ($hook === 'woocommerce_page_wc-settings') {
-
         $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
         $section = isset($_GET['section']) ? $_GET['section'] : '';
-
-        // Check if the tab is 'settings_tab_storeconnect' and the section is 'sync'
-        //if ($tab === 'settings_tab_storeconnect' && $section === 'sync') {
 
         $scripts = $this->get_admin_scripts();
         $styles  = $this->get_admin_styles();
@@ -103,7 +97,7 @@ class Assets
 
             wp_enqueue_style($handle, $style['src'], $deps, $style['version']);
         }
-        //}
-        //}
+
+        wp_localize_script('storeconnect-admin', 'storeconnectLocalizer', array());
     }
 }

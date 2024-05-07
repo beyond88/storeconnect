@@ -206,15 +206,15 @@ class Order
      */
     public  function sync_start(WP_REST_Request $request)
     {
-        if (! empty($request) ) {
+        if (!empty($request)) {
 
             if (!wp_next_scheduled('storeconnect_sync_orders_schedule')) {
                 wp_schedule_event(time(), 'storeconnect_sync_1_min', 'storeconnect_sync_orders_schedule');
             }
 
-            OrderSyncToHubCentral::instance()->sync();
+            $response = OrderSyncToHubCentral::instance()->sync();
 
-            return new WP_REST_Response(array('success' => true, 'message' => 'Order sync in progress'), 200);
+            return new WP_REST_Response(array('success' => true, 'message' => 'Order sync in progress', 'response' => $response), 200);
         } else {
             return new WP_REST_Response(array('success' => true, 'message' => 'Something went wrong'), 200);
         }
@@ -227,19 +227,24 @@ class Order
      */
     public function sync_status(WP_REST_Request $request)
     {
-
         if (!empty($request)) {
             $schedule = wp_get_schedule('storeconnect_sync_orders_schedule');
-            $cache_key = 'stc_order_sync_cache';
-            $synced_order_ids = wp_cache_get($cache_key, array());
-            if (!empty($synced_order_ids) || $schedule) {
-                return new WP_REST_Response(array('success' => true, 'message' => 'Order sync in progress'), 200);
-            }
-            return new WP_REST_Response(array('success' => true, 'message' => 'Order syncing is finished'), 200);
-        } else {
-            return new WP_REST_Response(array('success' => true, 'message' => 'Something went wrong'), 402);
-        }
+            $synced_order_ids = get_transient('stc_order_sync_cache');
 
+            // Define status variable
+            $status = '';
+
+            if (!empty($synced_order_ids) || $schedule) {
+                $status = 'in_progress';
+            } else {
+                $status = 'finished';
+            }
+
+            // Return status along with response
+            return new WP_REST_Response(array('success' => true, 'status' => $status), 200);
+        } else {
+            return new WP_REST_Response(array('success' => false, 'message' => 'Something went wrong'), 402);
+        }
     }
 
     /**
@@ -249,10 +254,9 @@ class Order
      */
     public function stop_sync()
     {
-        $cache_key = 'stc_order_sync_cache';
-        wp_cache_delete($cache_key);
         wp_clear_scheduled_hook('storeconnect_sync_orders_schedule');
+        delete_transient('stc_order_sync_cache');
 
-        return new WP_REST_Response(array('success' => true, 'message' => ''), 200);
+        return new WP_REST_Response(array('success' => true, 'message' => 'The order syncing has been stopped!'), 200);
     }
 }

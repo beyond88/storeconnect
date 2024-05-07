@@ -282,9 +282,8 @@ class StoreConnectSettings
         $table = $this->custom_row_table_header();
         foreach ($rows as $row) {
             $table .= '<tr valign="top">
-                    <th scope="row" class="titledesc" style="width: 30%">' . $row['th'] . '</th>
-                    <td class="forminp forminp-text" style="width: 10%">' . $row['td'] . '</td>
-                    <td class="forminp forminp-text" style="width: 50%">' . $row['td_extra'] . '</td>
+                    <th scope="row" class="titledesc">' . $row['th'] . '</th>
+                    <td class="forminp forminp-text">' . $row['td'] . '</td>
                 </tr>';
         }
 
@@ -301,21 +300,14 @@ class StoreConnectSettings
     public function print_sync_table()
     {
 
-        // $rows = [
-        //     [
-        //         'th' => '<label>' . __('WooCommerce &#128073; HubCentral', 'storeconnect') . '</label>',
-        //         'td' => '<button id="storeconnect-order-sync-btn" type="button" class="button">
-        //                     <span>' . __('&#10004 Sync now', 'storeconnect') . '</span>
-        //                 </button><span class="sync_message" id="sync_order_message"></span>
-        //         ',
-        //         'td_extra' => '<button id="woo-storeconnect-order-stop-sync-btn" type="button" class="button">
-        //                     <span>' . __('Stop sync', 'storeconnect') . '</span>
-        //                 </button>
-        //         ',
-        //     ]
-        // ];
+        $rows = [
+            [
+                'th' => '<label>' . __('WooCommerce &#128073; HubCentral', 'storeconnect') . '</label>',
+                'td' => '<div class="sync-process-area" id="sync-process-area"></div>',
+            ]
+        ];
 
-        // echo $this->custom_rows($rows);
-        return include __DIR__ . '/views/sync-template.php';
+        echo $this->custom_rows($rows);
+        // echo include __DIR__ . '/views/sync-template.php';
     }
 }

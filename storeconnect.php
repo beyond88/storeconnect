@@ -98,6 +98,7 @@ final class StoreConnect
         new StoreConnect\Assets();
         new StoreConnect\StoreConnecti18n();
         new StoreConnect\Cron\SyncCron();
+        new StoreConnect\API();
 
         if (defined('DOING_AJAX') && DOING_AJAX) {
             new StoreConnect\Ajax();
