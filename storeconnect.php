@@ -100,10 +100,6 @@ final class StoreConnect
         new StoreConnect\Cron\SyncCron();
         new StoreConnect\API();
 
-        if (defined('DOING_AJAX') && DOING_AJAX) {
-            new StoreConnect\Ajax();
-        }
-
         //if (is_admin()) {
         new StoreConnect\Admin();
         //} else {
